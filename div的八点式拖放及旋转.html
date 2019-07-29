@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>div的八点式拖放及旋转</title>
+<style> 
+*{margin: 0;padding: 0}
+#testcss{background: url("ceshi.png");background-repeat: no-repeat;background-size: 100% 100%;cursor: move;}
+#testcss:before{position: absolute;top: 0;left: 0;opacity: 1;content: "";border: 1px solid hsla(0,0%,100%,.5);width: 100%;height: 100%;pointer-events: none;box-sizing: border-box;z-index: 1;}
+#testcss:after{position: absolute;top: 0;left: 0;opacity: 1;content: "";border: 1px dashed rgba(0,0,0,.5);width: 100%;height: 100%;pointer-events: none;box-sizing: border-box;z-index: 2;}
+.corner{position: absolute;width: 7px;height: 7px;border-radius: 7px;background-color: #333;border: 3px solid #fff;pointer-events: auto;z-index: 1;}
+#rLeftDown,#rRightUp{cursor:ne-resize;} 
+#rRightDown,#rLeftUp{cursor:nw-resize;} 
+#rRight,#rLeft{cursor:e-resize;} 
+#rUp,#rDown{cursor:n-resize;} 
+.middle {top: 50%;margin-top: -7px;} 
+.left {left: -7px;}
+.right {right: -7px;}
+.center {left: 50%;margin-left: -7px;}
+.top {top: -7px;}
+.bottom {bottom: -7px;}
+.rotate {position: absolute;bottom: -35px;left: 50%;margin-left: -12px;width: 23px;height: 23px;background-image: url("turn.png");cursor: pointer;pointer-events: auto;background-size: 80%;background-repeat: no-repeat;background-position: center;}
+.rotate .ro_v {position: absolute;bottom: -20px;width: 50px;left: -10px;text-align: center;}
+</style>
+
+</head>
+<body>
+    <div id="testcss" style="height:100px; width:100px; position:absolute; left:200px; top:200px;">
+        <div id="rLeftUp" class="corner top left arrow-top-left"></div>
+        <div id="rUp" class="corner top center arrow-top-center"></div>
+        <div id="rRightUp" class="corner top right arrow-top-right"></div>
+        <div id="rLeft" class="corner middle left arrow-center-left"></div>
+        <div id="rRight" class="corner middle right arrow-center-right"></div>
+        <div id="rLeftDown" class="corner bottom left arrow-bottom-left"></div>
+        <div id="rDown" class="corner bottom center arrow-bottom-center"></div>
+        <div id="rRightDown" class="corner bottom right arrow-bottom-right"></div>
+        <div class="rotate">
+            <span class="ro_v"><span class="value">0</span> °</span>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="welcome.js"></script>
+<script type="text/javascript">
+dragPanelMove("#testcss","#testcss");
+function dragPanelMove(downDiv,moveDiv){
+    $(downDiv).mousedown(function (e) {
+            var isMove = true;
+            var div_x = e.pageX - $(moveDiv).offset().left;
+            var div_y = e.pageY - $(moveDiv).offset().top;
+            $(document).mousemove(function (e) {
+                if (isMove) {
+                    var obj = $(moveDiv);
+                    obj.css({"left":e.pageX - div_x, "top":e.pageY - div_y});
+                }
+            }).mouseup(
+                function () {
+                isMove = false;
+            });
+    });
+
+}
+function judge(){
+    $("#rLeftUp").unbind('mousedown');
+    $("#rUp").unbind('mousedown');
+    $("#rRightUp").unbind('mousedown');
+    $("#rLeft").unbind('mousedown');
+    $("#rRight").unbind('mousedown');
+    $("#rLeftDown").unbind('mousedown');
+    $("#rDown").unbind('mousedown');
+    $("#rRightDown").unbind('mousedown');
+
+    var b = Number($(".value").text())
+    if (b>=0 && b<90) {
+        $(".arrow-top-left").attr("id","rLeftUp")
+        $(".arrow-top-center").attr("id","rUp")
+        $(".arrow-top-right").attr("id","rRightUp")
+        $(".arrow-center-left").attr("id","rLeft")
+        $(".arrow-center-right").attr("id","rRight")
+        $(".arrow-bottom-left").attr("id","rLeftDown")
+        $(".arrow-bottom-center").attr("id","rDown")
+        $(".arrow-bottom-right").attr("id","rRightDown")
+    }
+    if (b>=90 && b<180) {//变id    rLeftUp rUp rRightUp rLeft rRight rLeftDown rDown rRightDown
+        // arrow-top-left arrow-top-center arrow-top-right  arrow-center-left  arrow-center-right arrow-bottom-left arrow-bottom-center arrow-bottom-right
+        $(".arrow-top-left").attr("id","rLeftDown")
+        $(".arrow-top-center").attr("id","rLeft")
+        $(".arrow-top-right").attr("id","rLeftUp")
+        $(".arrow-center-left").attr("id","rDown")
+        $(".arrow-center-right").attr("id","rUp")
+        $(".arrow-bottom-left").attr("id","rRightDown")
+        $(".arrow-bottom-center").attr("id","rRight")
+        $(".arrow-bottom-right").attr("id","rRightUp")
+    }
+    if(b>=180 && b<270){
+        $(".arrow-top-left").attr("id","rRightDown")
+        $(".arrow-top-center").attr("id","rDown")
+        $(".arrow-top-right").attr("id","rLeftDown")
+        $(".arrow-center-left").attr("id","rRight")
+        $(".arrow-center-right").attr("id","rLeft")
+        $(".arrow-bottom-left").attr("id","rRightUp")
+        $(".arrow-bottom-center").attr("id","rUp")
+        $(".arrow-bottom-right").attr("id","rLeftUp")
+    }
+    if(b>=270 &&b <360){
+        $(".arrow-top-left").attr("id","rLeftUp")
+        $(".arrow-top-center").attr("id","rUp")
+        $(".arrow-top-right").attr("id","rRightUp")
+        $(".arrow-center-left").attr("id","rLeft")
+        $(".arrow-center-right").attr("id","rRight")
+        $(".arrow-bottom-left").attr("id","rLeftDown")
+        $(".arrow-bottom-center").attr("id","rDown")
+        $(".arrow-bottom-right").attr("id","rRightDown")
+    }
+}
+
+        var isdown = false;
+        var angle = 0;
+        var tl = false;
+        var tc = false;
+        var tr = false;
+        var cl = false;
+        var cr = false;
+        var bl = false;
+        var bc = false;
+        var br = false;
+        var w_br = $("#rRightDown").offset().top;
+        var h_br = $("#rRightDown").offset().left;
+        
+function stopBubbling(e) {
+    e = window.event || e;
+    if (e.stopPropagation) {
+        e.stopPropagation();      //阻止事件 冒泡传播
+    } else {
+        e.cancelBubble = true;   //ie兼容
+    }
+}
+       
+            
+        run();
+        var b_top = $("#testcss").offset().top;
+        var b_left = $("#testcss").offset().left;
+        var b_width = parseInt($("#testcss").css("width"))/2
+        var b_height = parseInt($("#testcss").css("height"))/2
+        var b = Number($(".value").text())
+        $("html").mousemove(function(e){
+            
+            //旋转
+            if(isdown == true){
+                stopBubbling(e);
+                var a = turn(b_top+b_height,b_left+b_width,e.pageX,e.pageY)
+                $("#testcss").css("transform","rotate("+a+"deg)");
+                var b = 0;
+                if(a>0&&a<360){
+                    b = 360-a
+                }
+
+                if(a<0){
+                    b = Math.abs(a)
+                }
+                $(".rotate .value").text(parseInt(b))
+
+            }
+            //上左
+            if(tl == true){
+                stopBubbling(e);
+                $("#testcss").css("left",e.pageX+"px");
+                $("#testcss").css("top",e.pageY+"px");
+                $("#testcss").css("width",w_br-e.pageX+"px");
+                $("#testcss").css("height",h_br-e.pageY+"px");
+            }
+            //上中
+            if(tc == true){
+                stopBubbling(e);
+                $("#testcss").css("top",e.pageY+"px");
+                $("#testcss").css("height",h_br-e.pageY+"px");
+            }
+            //上右
+            if(tr == true){
+                stopBubbling(e);
+                $("#testcss").css("top",e.pageY+"px");
+                $("#testcss").css("height",h_br-e.pageY+"px");
+                 $("#testcss").css("width",e.pageX-b_left+"px");
+            }
+            //中左
+            if(cl == true){
+                stopBubbling(e);
+                $("#testcss").css("left",e.pageX+"px");
+                $("#testcss").css("width",w_br-e.pageX+"px");
+            }
+            //中右
+            if(cr == true){
+                stopBubbling(e);
+                $("#testcss").css("width",e.pageX-b_left+"px");
+            }
+            
+            //下左
+            if(bl == true){
+                stopBubbling(e);
+                $("#testcss").css("left",e.pageX+"px");
+                $("#testcss").css("width",w_br-e.pageX+"px");
+                $("#testcss").css("height",e.pageY-b_top+"px");
+            }
+            //下中
+            if(bc == true){
+                stopBubbling(e);
+                $("#testcss").css("height",e.pageY-b_top+"px");
+            }
+            //下右
+           if(br == true){
+                stopBubbling(e);
+                $("#testcss").css("width",e.pageX-b_left+"px");
+                $("#testcss").css("height",e.pageY-b_top+"px");
+            }
+        }).mouseup(function(e){
+            isdown = false;
+            tl = false;
+            tc = false;
+            tr = false;
+            cl = false;
+            cr = false;
+            bl = false;
+            bc = false;
+            br = false;
+            judge();
+            run()
+        });
+function run(){
+    /*旋转*/
+        $(".rotate").mousedown(function(e){
+            isdown = true;
+            e.preventDefault();
+            startX=e.pageX;
+            startY=e.pageY;
+        });
+        /*上左*/
+        $("#rLeftUp").mousedown(function(e){
+            tl = true;
+            //e.preventDefault();
+            w_br = $("#rRightDown").offset().top;
+            h_br = $("#rRightDown").offset().left;
+        });
+        /*上中*/
+        $("#rUp").mousedown(function(e){
+            tc = true;
+            //e.preventDefault();
+            w_br = $("#rRightDown").offset().top;
+            h_br = $("#rRightDown").offset().left;
+        });
+        /*上右*/
+        $("#rRightUp").mousedown(function(e){
+            tr = true;
+            //e.preventDefault();
+            w_br = $("#rRightDown").offset().top;
+            h_br = $("#rRightDown").offset().left;
+        });
+        /*中左拖拽*/
+        $("#rLeft").mousedown(function(e){
+            cl = true;
+            //e.preventDefault();
+            w_br = $("#rRightDown").offset().top;
+            h_br = $("#rRightDown").offset().left;
+        });
+        /*中右拖拽*/
+        $("#rRight").mousedown(function(e){
+            cr = true;
+            //e.preventDefault();
+            w_br = $("#rRightDown").offset().top;
+            h_br = $("#rRightDown").offset().left;
+        });
+
+        /*下左拖拽*/
+        $("#rLeftDown").mousedown(function(e){
+            bl = true;
+            //e.preventDefault();
+            w_br = $("#rRightDown").offset().top;
+            h_br = $("#rRightDown").offset().left;
+        });
+        /*下中拖拽*/
+        $("#rDown").mousedown(function(e){
+            bc = true;
+            //e.preventDefault();
+            w_br = $("#rRightDown").offset().top;
+            h_br = $("#rRightDown").offset().left;
+        });
+        /*下右拖拽*/
+        $("#rRightDown").mousedown(function(e){
+            br = true;
+            //e.preventDefault();
+            w_br = $("#rRightDown").offset().top;
+            h_br = $("#rRightDown").offset().left;
+        });
+}
+        
+
+function turn(x,y,y1,x1){
+    var degree = 0;
+    // 计算控件距离圆心距离
+    var distance = Math.sqrt(Math.pow((x - x1), 2) + Math.pow(y - y1, 2));
+    var xD = (x - x1);
+    
+    var mySin = Math.abs(xD) / distance;
+    if(x<x1){
+        if(y<y1){
+            degree =  270+Math.asin(mySin) / Math.PI * 180;
+        }else if(y>y1){
+            degree =  90 -Math.asin(mySin) / Math.PI * 180;
+        }
+    }else if(x>x1){
+        if (y < y1) {
+            degree =  270 -Math.asin(mySin) / Math.PI * 180;
+        }else if(y > y1){
+            degree =  -270+Math.asin(mySin) / Math.PI * 180;
+        }
+    }
+    return degree;
+}
+
+
+
+
+
+
+</script>
+</html>
+
+
